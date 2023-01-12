@@ -22,7 +22,7 @@ export async function eliminar_espacios() {
   try {
     await Excel.run(async (context) => {
       //Sheet data
-      let sheet = context.workbook.worksheets.getFirst();
+      let sheet = context.workbook.worksheets.getActiveWorksheet();
       let rango = sheet.getUsedRange(true);
       rango.load("values");
 
@@ -39,15 +39,16 @@ export async function eliminar_espacios() {
 export async function procesar_lineas() {
   try {
     await Excel.run(async (context) => {
-      //Sheets Excel
-      let export_sheet = context.workbook.worksheets.getItem("Exportar");
-      let active_sheet = context.workbook.worksheets.getActiveWorksheet();
-
       //Nombre de la Sheet activa
+      let active_sheet = context.workbook.worksheets.getActiveWorksheet();
       active_sheet.load('name');
       await context.sync();
 
       const active_sheet_name = active_sheet.name;
+
+      //Agrego sheet de exportacion y la oculto
+      let export_sheet = context.workbook.worksheets.add(`Exportar-${active_sheet_name}`);
+      export_sheet.visibility = Excel.SheetVisibility.hidden;
     
       //Rango y contador de rows en la sheet de exportacion
       let export_used_range = export_sheet.getUsedRange(true);
@@ -64,11 +65,6 @@ export async function procesar_lineas() {
       await context.sync();
 
       eliminar_espacios();
-      
-      // Limpiar sheet de exportacion
-      if(export_used_range.rowCount > 1){
-        export_used_range.clear();
-      }
 
       primera_row_export.values = [[ 
         `=${active_sheet_name}!A2`,
@@ -93,9 +89,8 @@ export async function procesar_lineas() {
       ]];
 
       //Ultima fila de la sheet de exportacion
-      let last_row_export = export_used_range.getLastRow();
-      last_row_export.load("address");
-      
+      let last_row_export = primera_row_export.getLastRow();
+
       await context.sync();
 
       for (let i = 1; i < active_sheet_used_range.rowCount; i++) {
@@ -113,7 +108,6 @@ export async function procesar_lineas() {
       }
 
       exportar_txt();
-
     });
   } catch (error) {
     console.error(error);
@@ -123,10 +117,17 @@ export async function procesar_lineas() {
 export async function exportar_txt() {
   try {
     await Excel.run(async (context) => {
+      //Nombre de la Sheet activa
+      let active_sheet = context.workbook.worksheets.getActiveWorksheet();
+      active_sheet.load('name');
+      
+      await context.sync();
+      const active_sheet_name = active_sheet.name;
+
       //Sheet Export
-      let sheet = context.workbook.worksheets.getItem("Exportar");
-      let rango = sheet.getUsedRange(true);
-      rango.load(["address", "values", "rowCount"]);
+      let export_sheet = context.workbook.worksheets.getItem(`Exportar-${active_sheet_name}`);
+      let export_used_range = export_sheet.getUsedRange(true);
+      export_used_range.load("values");
 
       //Fecha de inicio de Excel
       dayjs.extend(utc);
@@ -135,7 +136,7 @@ export async function exportar_txt() {
       await context.sync();
 
       // Valores para exportar de la ultima sheet
-      let values = rango.values;
+      let values = export_used_range.values;
       values = values
         .map((r) => {
           // Cambio los valores de las Celdas E y J a formato fecha
@@ -158,6 +159,9 @@ export async function exportar_txt() {
       });
 
       FileSaver.saveAs(blob, "export-sss.txt");
+
+      // Eliminar sheet exportacion
+      export_sheet.delete();
     });
   } catch (error) {
     console.error(error);
