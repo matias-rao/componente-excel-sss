@@ -41,15 +41,15 @@ export async function procesar_lineas() {
     await Excel.run(async (context) => {
       //Nombre de la Sheet activa
       let active_sheet = context.workbook.worksheets.getActiveWorksheet();
-      active_sheet.load('name');
+      active_sheet.load("name");
       await context.sync();
 
       const active_sheet_name = active_sheet.name;
 
       //Agrego sheet de exportacion y la oculto
       let export_sheet = context.workbook.worksheets.add(`Exportar-${active_sheet_name}`);
-      export_sheet.visibility = Excel.SheetVisibility.hidden;
-    
+      // export_sheet.visibility = Excel.SheetVisibility.hidden;
+
       //Rango y contador de rows en la sheet de exportacion
       let export_used_range = export_sheet.getUsedRange(true);
       export_used_range.load("rowCount");
@@ -57,36 +57,48 @@ export async function procesar_lineas() {
       //Rango y contador de rows en la sheet de data
       let active_sheet_used_range = active_sheet.getUsedRange(true);
       active_sheet_used_range.load(["rowCount"]);
-      
+
       //Primera row sheet export
       let primera_row_export = export_sheet.getRange("A1:S1");
-      primera_row_export.load('values');
-      
+      primera_row_export.load("values");
+
       await context.sync();
 
       eliminar_espacios();
 
-      primera_row_export.values = [[ 
-        `=${active_sheet_name}!A2`,
-        `=${active_sheet_name}!B2`,
-        `=${active_sheet_name}!C2`, 
-        `=${active_sheet_name}!D2 & REPT(" ",40-LEN(${active_sheet_name}!D2))`,
-        `=${active_sheet_name}!E2`,
-        `=${active_sheet_name}!F2`,
-        `=REPT(0,11-LEN(${active_sheet_name}!G2)) & ${active_sheet_name}!G2`,
-        `=REPT(0,2-LEN(${active_sheet_name}!H2)) & ${active_sheet_name}!H2`,
-        `=${active_sheet_name}!I2`,
-        `=${active_sheet_name}!J2`,
-        `=REPT(0,14-LEN(${active_sheet_name}!K2)) & ${active_sheet_name}!K2`,
-        `=REPT(0,5-LEN(${active_sheet_name}!L2)) & ${active_sheet_name}!L2`,
-        `=REPT(0,8-LEN(${active_sheet_name}!M2)) & ${active_sheet_name}!M2`,
-        `=REPT(0,10-LEN(${active_sheet_name}!N2)) & ${active_sheet_name}!N2`,
-        `=REPT(0,10-LEN(${active_sheet_name}!O2)) & ${active_sheet_name}!O2`,
-        `=REPT(0,3-LEN(${active_sheet_name}!P2)) & ${active_sheet_name}!P2`,
-        `=REPT(0,6-LEN(${active_sheet_name}!Q2)) & ${active_sheet_name}!Q2`,
-        `=${active_sheet_name}!R2`,
-        `=${active_sheet_name}!S2`,
-      ]];
+      //pop-up / dialog office api
+      let dialog;
+      
+      //TO-DO: cambiar url
+      Office.context.ui.displayDialogAsync("https://localhost:3000/loading.html", { height: 30, width: 30, displayInIframe: true },
+        function (asyncResult) {
+          dialog = asyncResult.value;
+        }
+      );
+
+      primera_row_export.values = [
+        [
+          `=${active_sheet_name}!A2`,
+          `=${active_sheet_name}!B2`,
+          `=${active_sheet_name}!C2`,
+          `=${active_sheet_name}!D2 & REPT(" ",40-LEN(${active_sheet_name}!D2))`,
+          `=${active_sheet_name}!E2`,
+          `=${active_sheet_name}!F2`,
+          `=REPT(0,11-LEN(${active_sheet_name}!G2)) & ${active_sheet_name}!G2`,
+          `=REPT(0,2-LEN(${active_sheet_name}!H2)) & ${active_sheet_name}!H2`,
+          `=${active_sheet_name}!I2`,
+          `=${active_sheet_name}!J2`,
+          `=REPT(0,14-LEN(${active_sheet_name}!K2)) & ${active_sheet_name}!K2`,
+          `=REPT(0,5-LEN(${active_sheet_name}!L2)) & ${active_sheet_name}!L2`,
+          `=REPT(0,8-LEN(${active_sheet_name}!M2)) & ${active_sheet_name}!M2`,
+          `=REPT(0,10-LEN(${active_sheet_name}!N2)) & ${active_sheet_name}!N2`,
+          `=REPT(0,10-LEN(${active_sheet_name}!O2)) & ${active_sheet_name}!O2`,
+          `=REPT(0,3-LEN(${active_sheet_name}!P2)) & ${active_sheet_name}!P2`,
+          `=REPT(0,6-LEN(${active_sheet_name}!Q2)) & ${active_sheet_name}!Q2`,
+          `=${active_sheet_name}!R2`,
+          `=${active_sheet_name}!S2`,
+        ],
+      ];
 
       //Ultima fila de la sheet de exportacion
       let last_row_export = primera_row_export.getLastRow();
@@ -108,6 +120,8 @@ export async function procesar_lineas() {
       }
 
       exportar_txt();
+
+      dialog.close();
     });
   } catch (error) {
     console.error(error);
@@ -119,8 +133,8 @@ export async function exportar_txt() {
     await Excel.run(async (context) => {
       //Nombre de la Sheet activa
       let active_sheet = context.workbook.worksheets.getActiveWorksheet();
-      active_sheet.load('name');
-      
+      active_sheet.load("name");
+
       await context.sync();
       const active_sheet_name = active_sheet.name;
 
