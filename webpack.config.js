@@ -3,9 +3,11 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
+require('dotenv').config()
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = process.env.URL_PROD; 
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -88,6 +90,7 @@ module.exports = async (env, options) => {
         template: "./src/loading/loading.html",
         chunks: ["polyfill", "loading"],
       }),
+      new Dotenv()
     ],
     devServer: {
       headers: {

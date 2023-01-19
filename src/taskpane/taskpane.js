@@ -69,8 +69,7 @@ export async function procesar_lineas() {
       //pop-up / dialog office api
       let dialog;
       
-      //TO-DO: cambiar url
-      Office.context.ui.displayDialogAsync("https://localhost:3000/loading.html", { height: 30, width: 30, displayInIframe: true },
+      Office.context.ui.displayDialogAsync(process.env.URL_PROD + 'loading.html', { height: 30, width: 30, displayInIframe: true },
         function (asyncResult) {
           dialog = asyncResult.value;
         }
