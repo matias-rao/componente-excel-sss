@@ -8,6 +8,7 @@ var FileSaver = require("file-saver");
 var dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 
+
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
     document.getElementById("sideload-msg").style.display = "none";
@@ -15,6 +16,17 @@ Office.onReady((info) => {
     document.getElementById("eliminar_espacios").onclick = eliminar_espacios;
     document.getElementById("procesar_lineas").onclick = procesar_lineas;
     document.getElementById("exportar_txt").onclick = exportar_txt;
+  }
+
+  //Chequea el lenguaje predeterminado del documento
+  const myLanguage = Office.context.contentLanguage;
+
+  if(myLanguage != 'es-AR'){
+    Office.context.ui.displayDialogAsync(process.env.URL_PROD + 'lenguaje.html', { height: 35, width: 30, displayInIframe: true },
+      function (asyncResult) {
+        dialog = asyncResult.value;
+      }
+    );
   }
 });
 

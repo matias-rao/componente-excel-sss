@@ -87,8 +87,13 @@ module.exports = async (env, options) => {
       }),
       new HtmlWebpackPlugin({
         filename: "loading.html",
-        template: "./src/loading/loading.html",
+        template: "./src/dialogs/loading.html",
         chunks: ["polyfill", "loading"],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "lenguaje.html",
+        template: "./src/dialogs/lenguaje.html",
+        chunks: ["polyfill", "lenguaje"],
       }),
       new Dotenv()
     ],
