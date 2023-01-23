@@ -6,11 +6,11 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="export-txt"/>
   <Description DefaultValue="A template to get started."/>
-  <IconUrl DefaultValue="https://localhost:3000/assets/iatros.png"/>
+  <IconUrl DefaultValue="https://localhost:3000/assets/iatros32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/iatros.png"/>
-  <SupportUrl DefaultValue="https://www.contoso.com/help"/>
+  <SupportUrl DefaultValue="https://github.com/matias-rao/componente-excel-sss"/>
   <AppDomains>
-    <AppDomain>https://www.contoso.com</AppDomain>
+    <AppDomain>https://discapacidad-iatros.netlify.app</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook"/>
