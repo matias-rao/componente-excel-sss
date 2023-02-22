@@ -22,7 +22,7 @@ Office.onReady((info) => {
   const myLanguage = Office.context.contentLanguage;
 
   if(myLanguage != 'es-AR'){
-    Office.context.ui.displayDialogAsync(process.env.URL_PROD + 'lenguaje.html', { height: 35, width: 30, displayInIframe: true },
+    Office.context.ui.displayDialogAsync('https://discapacidad-iatros.netlify.app/lenguaje.html', { height: 35, width: 30, displayInIframe: true },
       function (asyncResult) {
         dialog = asyncResult.value;
       }
@@ -56,11 +56,16 @@ export async function procesar_lineas() {
       active_sheet.load("name");
       await context.sync();
 
+      const active_sheet_name_original = active_sheet.name;
+
+      active_sheet.name = active_sheet_name_original.replace(/\s+/g, '');
+      await context.sync();
+
       const active_sheet_name = active_sheet.name;
 
       //Agrego sheet de exportacion y la oculto
-      let export_sheet = context.workbook.worksheets.add(`Exportar-${active_sheet_name}`);
-      // export_sheet.visibility = Excel.SheetVisibility.hidden;
+      let export_sheet = context.workbook.worksheets.add(`Exportar-${active_sheet_name + Math.floor(Math.random() * 11)}`);
+      export_sheet.load("name");
 
       //Rango y contador de rows en la sheet de exportacion
       let export_used_range = export_sheet.getUsedRange(true);
@@ -81,7 +86,7 @@ export async function procesar_lineas() {
       //pop-up / dialog office api
       let dialog;
       
-      Office.context.ui.displayDialogAsync(process.env.URL_PROD + 'loading.html', { height: 30, width: 30, displayInIframe: true },
+      Office.context.ui.displayDialogAsync('https://discapacidad-iatros.netlify.app/loading.html', { height: 30, width: 30, displayInIframe: true },
         function (asyncResult) {
           dialog = asyncResult.value;
         }
@@ -130,7 +135,7 @@ export async function procesar_lineas() {
         await context.sync();
       }
 
-      exportar_txt();
+      exportar_txt(active_sheet_name_original, export_sheet.name);
 
       dialog.close();
     });
@@ -139,7 +144,7 @@ export async function procesar_lineas() {
   }
 }
 
-export async function exportar_txt() {
+export async function exportar_txt(active_name, export_name) {
   try {
     await Excel.run(async (context) => {
       //Nombre de la Sheet activa
@@ -147,10 +152,9 @@ export async function exportar_txt() {
       active_sheet.load("name");
 
       await context.sync();
-      const active_sheet_name = active_sheet.name;
 
       //Sheet Export
-      let export_sheet = context.workbook.worksheets.getItem(`Exportar-${active_sheet_name}`);
+      let export_sheet = context.workbook.worksheets.getItem(export_name);
       let export_used_range = export_sheet.getUsedRange(true);
       export_used_range.load("values");
 
@@ -187,6 +191,7 @@ export async function exportar_txt() {
 
       // Eliminar sheet exportacion
       export_sheet.delete();
+      active_sheet.name = active_name;
     });
   } catch (error) {
     console.error(error);
