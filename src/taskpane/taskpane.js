@@ -101,7 +101,7 @@ export async function procesar_lineas() {
           `=${active_sheet_name}!E1`,
           `=${active_sheet_name}!F1`,
           `=REPT(0,11-LEN(${active_sheet_name}!G1)) & ${active_sheet_name}!G1`,
-          `=REPT(0,1-LEN(${active_sheet_name}!H1)) & ${active_sheet_name}!H1`,
+          `=REPT(0,2-LEN(${active_sheet_name}!H1)) & ${active_sheet_name}!H1`,
           `=${active_sheet_name}!I1`,
           `=${active_sheet_name}!J1`,
           `=REPT(0,14-LEN(${active_sheet_name}!K1)) & ${active_sheet_name}!K1`,
@@ -111,7 +111,7 @@ export async function procesar_lineas() {
           `=REPT(0,10-LEN(${active_sheet_name}!O1)) & ${active_sheet_name}!O1`,
           `=REPT(0,3-LEN(${active_sheet_name}!P1)) & ${active_sheet_name}!P1`,
           `=REPT(0,6-LEN(${active_sheet_name}!Q1)) & ${active_sheet_name}!Q1`,
-          `=${active_sheet_name}!R1`,
+          `=REPT(0,2-LEN(${active_sheet_name}!R1)) & ${active_sheet_name}!R1`,
           `=${active_sheet_name}!S1`,
         ],
       ];
